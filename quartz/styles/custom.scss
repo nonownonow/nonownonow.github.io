@@ -1,3 +1,518 @@
 @use "./variables.scss" as *;
 
-// put your custom CSS here!
+/* ==========================================================================
+   THRESHOLD — index intro screen
+
+   DESIGN SYSTEM
+     base unit      16px = 1rem
+     baseline       8px — every vertical value is a multiple of it, and every
+                    line-height snaps to it, so the type sits on one grid
+     type scale     1.250 (major third). steps below are exact powers of the
+                    ratio, not rounded guesses
+     spacing        derived from the same 8px baseline, so vertical rhythm and
+                    whitespace rhythm are ONE system rather than two
+     layout grid    375: 4col / 16 gutter / 24 margin
+                    768: 8col / 24 gutter / 48 margin
+                   1440: 12col / 24 gutter / 96 margin, 1200 max
+     pairing        Space Grotesk — display/Latin. geometric grotesque, cut
+                    terminals, tight counters: technical without costume.
+                    IBM Plex Sans KR — body AND 한글. Plex was drawn for a
+                    machine-industrial voice and its KR cut shares the Latin
+                    skeleton, so Korean and Latin sit on the same axis.
+                    IBM Plex Mono — the "system voice". Same superfamily as the
+                    body, so body↔mono need no metric reconciliation; Space
+                    Grotesk is then the single deliberate point of contrast.
+   ========================================================================== */
+
+/* -- Korean fallback -------------------------------------------------------
+   Quartz loads exactly three families (header / body / code) and emits
+   --headerFont: "<header>", <default sans>. Korean is not in that chain, so a
+   한글 heading would drop to a system face. Redefining here wins on source
+   order (verified in the compiled stylesheet) and routes Latin → Space
+   Grotesk, 한글 → IBM Plex Sans KR, both already loaded.                    */
+
+:root {
+  --headerFont: "Space Grotesk", "IBM Plex Sans KR", ui-sans-serif, system-ui,
+    sans-serif;
+}
+
+/* -- Tokens ---------------------------------------------------------------- */
+
+.threshold {
+  /* type scale — 1.250, exact. px @16 shown for audit */
+  --fs-micro: 0.64rem; /* 10.24 */
+  --fs-small: 0.8rem; /*  12.80 */
+  --fs-base: 1rem; /*    16.00 */
+  --fs-lead: 1.25rem; /* 20.00 */
+  --fs-d1: 1.5625rem; /* 25.00 */
+  --fs-d2: 1.9531rem; /* 31.25 */
+  --fs-d3: 2.4414rem; /* 39.06 */
+  --fs-d5: 3.8147rem; /* 61.04 */
+
+  /* line-heights — every value lands on an 8px multiple */
+  --lh-micro: 1rem; /*   16 = 2 × 8 */
+  --lh-small: 1rem; /*   16 = 2 × 8 */
+  --lh-lead: 2rem; /*    32 = 4 × 8 */
+  --lh-d2: 2.5rem; /*    40 = 5 × 8 */
+  --lh-d3: 3rem; /*      48 = 6 × 8 */
+  --lh-d5: 4.5rem; /*    72 = 9 × 8 */
+
+  /* optical tracking — negative as size grows, positive for small caps/mono */
+  --tr-micro: 0.18em;
+  --tr-small: 0.08em;
+  --tr-d2: -0.015em;
+  --tr-d3: -0.02em;
+  --tr-d5: -0.03em;
+
+  /* spacing — multiples of the 8px baseline */
+  --sp-1: 0.5rem; /*   8 */
+  --sp-2: 1rem; /*    16 */
+  --sp-3: 1.5rem; /*  24 */
+  --sp-4: 2rem; /*    32 */
+  --sp-6: 4rem; /*    64 */
+  --sp-7: 6rem; /*    96 */
+
+  /* self-contained colour: the panel is a doorway onto darkness, so it never
+     inherits the page theme — it reads identically in light and dark mode */
+  --th-bg: #0b0b0f;
+  --th-fg: #f0f0f5;
+  --th-dim: #6b6b7a;
+  --th-accent: #7fd1c1;
+  --th-rule: #22222b;
+
+  /* grid */
+  --th-margin: var(--sp-3);
+  --th-cols: 4;
+  --th-gutter: var(--sp-2);
+}
+
+/* -- Panel ----------------------------------------------------------------- */
+
+.threshold {
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  /* full-bleed out of Quartz's centred article column */
+  width: 100vw;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  padding: var(--sp-7) var(--th-margin) var(--sp-7);
+  background: var(--th-bg);
+  color: var(--th-fg);
+  overflow: hidden;
+
+  display: grid;
+  grid-template-columns: repeat(var(--th-cols), 1fr);
+  column-gap: var(--th-gutter);
+  align-content: start;
+
+  /* the aperture: a single very slow radial drift. one moving part, no glow
+     stack, no neon — the light is behind the door, not on it */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    z-index: -1;
+    background: radial-gradient(
+      55% 45% at 50% 38%,
+      rgba(127, 209, 193, 0.09) 0%,
+      rgba(143, 127, 209, 0.05) 38%,
+      transparent 72%
+    );
+    animation: th-drift 34s ease-in-out infinite alternate;
+  }
+
+  > * {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+}
+
+/* -- Elements -------------------------------------------------------------- */
+
+.threshold__marker {
+  font-family: var(--codeFont);
+  font-size: var(--fs-micro);
+  line-height: var(--lh-micro);
+  letter-spacing: var(--tr-micro);
+  text-transform: uppercase;
+  color: var(--th-dim);
+  margin-bottom: var(--sp-6); /* 64 */
+}
+
+.threshold__hail {
+  font-family: var(--codeFont);
+  font-size: var(--fs-small);
+  line-height: var(--lh-small);
+  letter-spacing: var(--tr-small);
+  color: var(--th-dim);
+  margin-bottom: var(--sp-3); /* 24 */
+
+  /* the caret: the question is still open */
+  &::after {
+    content: "";
+    display: inline-block;
+    width: 0.5em;
+    height: 1em;
+    margin-left: 0.5em;
+    vertical-align: -0.12em;
+    background: var(--th-accent);
+    animation: th-blink 1.6s steps(1, end) infinite;
+  }
+}
+
+/* the seam — the membrane between the two of them. it is the repeated motif:
+   it returns as a short tick before the coda */
+.threshold__seam {
+  height: 0;
+  border: 0;
+  border-top: 1px solid var(--th-rule);
+  margin-bottom: var(--sp-6); /* 64 */
+  transform-origin: left center;
+  animation: th-draw 1.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.threshold__offer {
+  font-family: var(--headerFont);
+  font-weight: 500;
+  font-size: var(--fs-d2);
+  line-height: var(--lh-d2);
+  letter-spacing: var(--tr-d2);
+  color: var(--th-fg);
+  border: 0;
+  padding: 0;
+  /* NOT text-wrap: balance — the line breaks are the author's (body ↔ brain is
+     a couplet). balance re-flowed "and give me your brain." into two lines and
+     destroyed the mirroring. */
+  text-wrap: pretty;
+
+  span {
+    display: block;
+    animation: th-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+/* the trade, made structural: "my body" is given away and sits flush left;
+   "your brain" is taken in and steps inward by one gutter. the coda steps once
+   more — a three-beat descent on the same interval */
+.threshold__give {
+  animation-delay: 0.35s;
+}
+
+.threshold__take {
+  padding-left: var(--sp-2); /* 16 = 1 gutter */
+  animation-delay: 0.5s;
+}
+
+.threshold__coda {
+  margin-top: var(--sp-4); /* 32 */
+  padding-left: var(--sp-4); /* 32 = 2 gutters */
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+  letter-spacing: 0;
+  color: var(--th-accent);
+  animation-delay: 0.72s;
+
+  /* the seam returns, one-sixth scale */
+  &::before {
+    content: "";
+    display: block;
+    width: var(--sp-4);
+    border-top: 1px solid var(--th-accent);
+    opacity: 0.5;
+    margin-bottom: var(--sp-2);
+  }
+}
+
+/* -- Body copy below the panel --------------------------------------------- */
+
+.threshold-after {
+  margin-top: var(--sp-7, 6rem);
+  max-width: 62ch; /* measure */
+}
+
+/* -- Breakpoints ----------------------------------------------------------- */
+
+@media (min-width: 768px) {
+  .threshold {
+    --th-cols: 8;
+    --th-gutter: 1.5rem; /* 24 */
+    --th-margin: 3rem; /*  48 */
+    padding-top: 8rem; /* 128 */
+    padding-bottom: 8rem;
+  }
+
+  .threshold__marker,
+  .threshold__hail,
+  .threshold__seam,
+  .threshold__offer {
+    grid-column: 2 / -2;
+  }
+
+  .threshold__offer {
+    font-size: var(--fs-d3);
+    line-height: var(--lh-d3);
+    letter-spacing: var(--tr-d3);
+  }
+
+  .threshold__take {
+    padding-left: 1.5rem;
+  }
+
+  .threshold__coda {
+    padding-left: 3rem;
+    font-size: var(--fs-d1);
+  }
+}
+
+@media (min-width: 1200px) {
+  .threshold {
+    --th-cols: 12;
+    --th-margin: 6rem; /* 96 */
+    padding-top: 12rem; /* 192 = 24 × 8 */
+    padding-bottom: 12rem;
+  }
+
+  .threshold__marker,
+  .threshold__hail,
+  .threshold__seam {
+    grid-column: 2 / 12;
+  }
+
+  /* the offer spans 8 of 12 — held off the right edge so the line breaks are
+     the author's, not the viewport's */
+  .threshold__offer {
+    grid-column: 2 / 10;
+    font-size: var(--fs-d5);
+    line-height: var(--lh-d5);
+    letter-spacing: var(--tr-d5);
+  }
+}
+
+/* -- Quartz page chrome on the index --------------------------------------
+   The intro is a full-viewport field. The right rail (graph, backlinks, TOC)
+   is noise on a landing and is removed. The left rail STAYS — an identity mark
+   holding the top-left corner over a dark field is the composition, not an
+   accident — but it is re-coloured for the dark ground and un-sticked so it
+   cannot collide with the type.                                              */
+
+body[data-slug="index"] {
+  background: var(--th-bg-page, #0b0b0f);
+
+  .right.sidebar {
+    display: none;
+  }
+
+  .center {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* #quartz-body is declared with the `grid-template` SHORTHAND and named
+     areas spanning three columns. Overriding grid-template-columns alone does
+     nothing — grid-template-areas re-creates the other two tracks implicitly
+     (measured: 1200.53px 229.469px 0px). The areas must be redefined too, in a
+     single column, or the field never reaches the viewport edge. */
+  #quartz-body {
+    grid-template:
+      "grid-header"
+      "grid-center"
+      "grid-sidebar-right"
+      "grid-footer" / 1fr;
+    padding: 0;
+  }
+
+  .center > .page-header {
+    display: none;
+  }
+
+  .left.sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    width: auto;
+    max-width: none;
+    padding: 1.5rem 1.5rem 0;
+    gap: 1rem;
+    background: transparent;
+
+    .page-title,
+    .page-title a {
+      font-family: var(--codeFont);
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #6b6b7a;
+      transition: color 0.4s ease;
+
+      &:hover {
+        color: #7fd1c1;
+      }
+    }
+
+    /* search / darkmode / explorer: present but recessive until hovered */
+    & > *:not(.page-title) {
+      opacity: 0.45;
+      transition: opacity 0.4s ease;
+
+      &:hover,
+      &:focus-within {
+        opacity: 1;
+      }
+    }
+  }
+
+  .page-footer,
+  footer {
+    background: var(--th-bg-page, #0b0b0f);
+  }
+}
+
+/* the panel becomes the viewport on the index.
+   .center is already full-width here, so the full-bleed escape used on inner
+   pages must be neutralised — leaving it in shifts the whole grid off-axis
+   (measured: -120px, which broke the left axis).                             */
+body[data-slug="index"] .threshold {
+  width: auto;
+  transform: none;
+  /* escape whatever inline margin the article column still carries, at any
+     breakpoint: 0 when the parent is already full-width (desktop), -16px each
+     side when it is not (mobile). No 100vw, so no scrollbar overflow. */
+  margin-inline: calc(50% - 50vw);
+  min-height: 100vh;
+  min-height: 100svh;
+  align-content: center;
+}
+
+/* ONE LEFT AXIS.
+   The identity mark, the marker, the hail, the seam and the type all start on
+   the same vertical line — the panel margin. Column 1 rather than column 2, so
+   there is a single axis for the eye to lock onto instead of two competing
+   indents. The seam still runs past the type block to the last column, which
+   is where the asymmetry lives.                                              */
+body[data-slug="index"] {
+  .threshold__marker,
+  .threshold__hail,
+  .threshold__seam,
+  .threshold__offer {
+    grid-column: 1 / -1;
+  }
+
+  .left.sidebar {
+    padding-left: var(--sp-3);
+  }
+}
+
+@media (min-width: 768px) {
+  body[data-slug="index"] {
+    .threshold__offer {
+      grid-column: 1 / -1;
+    }
+
+    .left.sidebar {
+      padding-left: 3rem;
+    }
+  }
+}
+
+@media (min-width: 1200px) {
+  body[data-slug="index"] {
+    .threshold__marker,
+    .threshold__hail,
+    .threshold__seam {
+      grid-column: 1 / 11;
+    }
+
+    /* the offer holds 10 of 12 — wide enough that each of the author's lines
+       stays on one line at the display step, with the last two columns kept
+       empty so the block still reads as held off the right edge */
+    .threshold__offer {
+      grid-column: 1 / 11;
+    }
+
+    .left.sidebar {
+      padding-left: 6rem;
+    }
+  }
+}
+
+/* body copy below the fold sits back inside a measured column */
+body[data-slug="index"] .threshold-after {
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 6rem 1.5rem 8rem;
+  max-width: 62ch;
+}
+
+@media (min-width: 768px) {
+  body[data-slug="index"] .threshold-after {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+/* -- Motion ---------------------------------------------------------------- */
+
+@keyframes th-draw {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes th-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem); /* 8 — the baseline unit again */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes th-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes th-drift {
+  from {
+    transform: translate3d(-2%, -1%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(2%, 1%, 0) scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .threshold::before,
+  .threshold__seam,
+  .threshold__offer span,
+  .threshold__hail::after {
+    animation: none !important;
+  }
+
+  .threshold__seam {
+    transform: none;
+    opacity: 1;
+  }
+
+  .threshold__offer span {
+    opacity: 1;
+    transform: none;
+  }
+}
