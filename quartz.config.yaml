@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
+configuration:
+  pageTitle: nonownonow
+  pageTitleSuffix: " · nonownonow"
+  locale: ko-KR
+  baseUrl: nonownonow.github.io
+  analytics:
+    provider: null
+  ignorePatterns:
+    - private
+    - templates
+    - .obsidian
