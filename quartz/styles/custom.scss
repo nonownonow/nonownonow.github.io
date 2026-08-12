@@ -172,10 +172,14 @@
   animation: th-draw 1.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* mobile display step is d1, not d2: at d2 the first authored line held but the
+   second wrapped, so one line of the couplet read as one line and the other as
+   two. Dropping one step keeps BOTH on a single line and the mirroring intact —
+   the couplet is the whole idea, so it outranks raw size. */
 .threshold__offer {
   font-family: var(--headerFont);
   font-weight: 500;
-  font-size: var(--fs-d2);
+  font-size: var(--fs-d1);
   line-height: var(--lh-d2);
   letter-spacing: var(--tr-d2);
   color: var(--th-fg);
