@@ -520,3 +520,94 @@ body[data-slug="index"] .threshold-after {
     transform: none;
   }
 }
+
+/* ==========================================================================
+   K-ART — post artwork layer (2026-08-13)
+   Threshold 와 같은 시스템: 8px 베이스라인 · 1.250 스케일 · Grotesk/Plex 페어링.
+   포스트 본문을 .k-art 래퍼로 감싸면 활성화. 색은 전부 테마 변수 — 다크모드 자동.
+   ========================================================================== */
+
+.k-art {
+  --k-ink: var(--darkgray);
+  --k-mut: var(--gray);
+  --k-acc: var(--secondary);
+  --k-hair: var(--lightgray);
+
+  & > * + * { margin-top: 1.5rem; }
+
+  .k-marker {
+    font-family: var(--codeFont), monospace;
+    font-size: 0.8rem; letter-spacing: 0.14em;
+    color: var(--k-acc); text-transform: uppercase;
+    margin: 0 0 0.5rem;
+  }
+
+  .k-hero {
+    margin: 2rem 0 3rem; padding-bottom: 2rem;
+    border-bottom: 1px solid var(--k-hair);
+    p.k-hero__line {
+      font-family: var(--headerFont), "IBM Plex Sans KR", sans-serif;
+      font-size: 1.953rem; line-height: 1.25; font-weight: 700;
+      margin: 0; color: var(--k-ink);
+      em { font-style: normal; color: var(--k-acc); }
+    }
+    p.k-hero__sub { margin: 1rem 0 0; color: var(--k-mut); font-size: 1rem; }
+  }
+
+  .k-pillar {
+    display: grid; grid-template-columns: 4.5rem 1fr;
+    gap: 0 1.5rem; align-items: start;
+    padding: 2rem 0 0.5rem; border-top: 1px solid var(--k-hair);
+    .k-pillar__no {
+      font-family: var(--headerFont), sans-serif;
+      font-size: 2.441rem; font-weight: 700; line-height: 1;
+      color: color-mix(in oklab, var(--k-acc) 26%, transparent);
+      letter-spacing: -0.02em;
+    }
+    .k-pillar__body { min-width: 0; }
+    .k-pillar__meta {
+      font-family: var(--codeFont), monospace;
+      font-size: 0.8rem; letter-spacing: 0.08em; color: var(--k-mut);
+      margin: 0 0 0.25rem;
+    }
+    h3 { margin: 0 0 0.75rem; font-size: 1.25rem; line-height: 1.5rem; }
+    p { margin: 0 0 1rem; }
+  }
+  @media (max-width: 600px) {
+    .k-pillar { grid-template-columns: 1fr; gap: 0; }
+    .k-pillar .k-pillar__no { font-size: 1.563rem; margin-bottom: 0.25rem; }
+  }
+
+  .k-fig {
+    margin: 1.5rem 0 2rem; text-align: center;
+    svg { max-width: 100%; height: auto; }
+    figcaption {
+      font-family: var(--codeFont), monospace;
+      font-size: 0.8rem; color: var(--k-mut); margin-top: 0.5rem;
+    }
+  }
+  .k-fig--wide { margin-left: 0; margin-right: 0; }
+
+  .k-pull {
+    margin: 2.5rem 0; padding: 0 0 0 1.25rem;
+    border-left: 3px solid var(--k-acc);
+    font-family: var(--headerFont), "IBM Plex Sans KR", sans-serif;
+    font-size: 1.25rem; line-height: 1.6; font-weight: 600;
+    color: var(--k-ink);
+  }
+
+  .k-coda {
+    margin-top: 3rem; padding: 1.5rem;
+    background: var(--highlight); border-radius: 8px;
+    p { margin: 0; }
+    p + p { margin-top: 0.75rem; }
+  }
+
+  /* 다이어그램 공통: 라인아트 — 잉크 스트로크 + 악센트 포인트 */
+  .k-d-ink   { stroke: var(--k-ink);  fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .k-d-acc   { stroke: var(--k-acc);  fill: none; stroke-width: 2; stroke-linecap: round; }
+  .k-d-mut   { stroke: var(--k-mut);  fill: none; stroke-width: 1.5; stroke-dasharray: 4 5; stroke-linecap: round; }
+  .k-d-fill  { fill: var(--k-acc); stroke: none; }
+  .k-d-text  { font-family: var(--codeFont), monospace; font-size: 11px; fill: var(--k-mut); }
+  .k-d-label { font-family: var(--codeFont), monospace; font-size: 12px; fill: var(--k-ink); font-weight: 600; }
+}
